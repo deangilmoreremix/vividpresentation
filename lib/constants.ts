@@ -2,7 +2,7 @@ import Home from "@/icons/Home";
 // import { Share } from "@/icons/Share";
 import { Template } from "@/icons/Template";
 import { Trash } from "@/icons/Trash";
-import { Settings } from "lucide-react";
+import { Settings, Palette } from "lucide-react";
 import {
   BlankCard,
   AccentLeft,
@@ -64,6 +64,11 @@ export const data = {
       title: "Templates",
       url: "/templates",
       icon: Template,
+    },
+    {
+      title: "Design",
+      url: "/design",
+      icon: Palette,
     },
     {
       title: "Trash",
@@ -749,5 +754,3 @@ export const themes: Theme[] = [
     type: "dark",
   },
 ];
-
-
