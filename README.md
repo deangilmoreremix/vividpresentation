@@ -1,91 +1,112 @@
-# Vivid Premium
+Here's a step-by-step guide for setting up your project with **ShadCN UI** and **Prisma** with **MongoDB**, using **Bun** as your package manager:
 
-A Next.js 13 full-stack application template featuring TypeScript, Prisma ORM, NextAuth.js authentication, Tailwind CSS, and the App Router. This repository provides a boilerplate for building secure, database-driven web apps.
+---
 
-## Features
+### **1. Install ShadCN UI**
+ShadCN UI simplifies your React/Next.js development by providing pre-built components.
 
-- **TypeScript**: End-to-end static typing
-- **Prisma**: Database schema modeling & migrations
-- **NextAuth.js**: Flexible email/password and OAuth authentication
-- **Tailwind CSS**: Utility-first styling
-- **Next.js App Router**: Nested layouts and server components
-- **Protected Routes**: Public `(auth)` vs. authenticated `(protected)` sections
-- **API Routes**: CRUD endpoints under `src/app/api/`
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js v18+ and npm v8+
-- PostgreSQL (or MySQL) instance
-- Git
-
-### Installation
-
-1. **Clone the repo**
+#### Installation Steps:
+1. **Initialize the ShadCN UI setup:**
    ```bash
-   git clone <your-repo-url> vivid-premium
-   cd vivid-premium
-Install dependencies
+   bunx create-shadcn-ui
+   ```
+2. **Follow the interactive prompts** to customize the setup:
+   - Choose the components you want to install.
+   - Configure any theme settings.
 
-bash
-Copy
-Edit
-npm install
-Environment variables
+3. **Integrate ShadCN UI into your project:**
+   After installation, ensure you import and use the components as needed in your Next.js app. For example:
+   ```tsx
+   import { Button } from '@/components/ui/button';
 
-bash
-Copy
-Edit
-cp .env.example .env
-Edit .env to include your database URL, NextAuth secret, and OAuth keys.
+   export default function Home() {
+     return <Button>Click Me</Button>;
+   }
+   ```
 
-Prisma setup
+---
 
-bash
-Copy
-Edit
-npx prisma generate
-npx prisma migrate dev --name init
-Run the development server
+### **2. Install Prisma with MongoDB**
+Prisma provides a type-safe ORM for working with your MongoDB database.
 
-bash
-Copy
-Edit
-npm run dev
-Visit http://localhost:3000.
+#### Installation Steps:
+1. **Add Prisma and the Prisma CLI:**
+   ```bash
+   bun add prisma @prisma/client
+   bunx prisma init
+   ```
 
-Project Structure
-csharp
-Copy
-Edit
-├── prisma/                 # Prisma schema & seeds
-├── src/
-│   ├── app/                # Next.js App Router
-│   │   ├── (auth)/         # Sign-in / sign-up pages
-│   │   ├── (protected)/    # Authenticated layouts & pages
-│   │   ├── api/            # API routes (CRUD)
-│   │   └── items/          # Example CRUD page
-│   ├── lib/                # Helpers (e.g., `prisma.ts`)
-│   └── styles/             # Global CSS, Tailwind config
-└── README.md
-Authentication
-This app uses NextAuth.js. See src/app/api/auth/[...nextauth]/route.ts for configuration and available providers.
+2. **Configure Prisma for MongoDB:**
+   Update your `prisma/schema.prisma` file:
+   ```prisma
+   datasource db {
+     provider = "mongodb"
+     url      = env("DATABASE_URL")
+   }
 
-Deployment
-Push to GitHub.
+   generator client {
+     provider = "prisma-client-js"
+   }
 
-Connect the repo to Vercel or Netlify.
+   model User {
+     id    String @id @default(auto()) @map("_id") @db.ObjectId
+     name  String
+     email String @unique
+   }
+   ```
 
-Configure environment variables in the hosting dashboard.
+3. **Set the Database URL:**
+   Add the MongoDB connection string in your `.env` file:
+   ```env
+   DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority"
+   ```
 
-The platform will build and deploy on every push.
+4. **Generate the Prisma client:**
+   ```bash
+   bunx prisma generate
+   ```
 
-License
-MIT © Your Name
+5. **Apply database migrations:**
+   Since MongoDB is schema-less, migrations might not always apply. Instead, you can validate your schema with:
+   ```bash
+   bunx prisma db push
+   ```
 
-pgsql
-Copy
-Edit
+---
 
-Feel free to adjust your project name, URLs, or license cred
+### **3. Connect Prisma to Your Next.js App**
+To fetch data using Prisma in your Next.js app:
+
+1. **Import and initialize the Prisma client:**
+   ```tsx
+   import { PrismaClient } from '@prisma/client';
+
+   const prisma = new PrismaClient();
+
+   export default async function handler(req, res) {
+     const users = await prisma.user.findMany();
+     res.json(users);
+   }
+   ```
+
+2. **Use API routes or server components** for data fetching.
+
+---
+
+### **4. Run the Development Server**
+Start your app with:
+```bash
+bun dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) to see your Next.js app running with ShadCN UI and MongoDB integration.
+
+---
+
+### **5. Deployment**
+Deploy your app on [Vercel](https://vercel.com) and configure your environment variables (e.g., `DATABASE_URL`) in the Vercel dashboard.
+
+For more details:
+- [Prisma MongoDB Documentation](https://www.prisma.io/docs/guides/database-connectors/mongodb)
+- [ShadCN UI Documentation](https://shadcn.dev/docs)
+
