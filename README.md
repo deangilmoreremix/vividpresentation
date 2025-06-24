@@ -1,112 +1,118 @@
-Here's a step-by-step guide for setting up your project with **ShadCN UI** and **Prisma** with **MongoDB**, using **Bun** as your package manager:
+# Vivid - AI PPT Generator
 
----
+A powerful AI-powered presentation generator built with Next.js, featuring design system integration with Figma.
 
-### **1. Install ShadCN UI**
-ShadCN UI simplifies your React/Next.js development by providing pre-built components.
+## 🚀 Quick Start
 
-#### Installation Steps:
-1. **Initialize the ShadCN UI setup:**
+1. **Clone and install dependencies:**
    ```bash
-   bunx create-shadcn-ui
-   ```
-2. **Follow the interactive prompts** to customize the setup:
-   - Choose the components you want to install.
-   - Configure any theme settings.
-
-3. **Integrate ShadCN UI into your project:**
-   After installation, ensure you import and use the components as needed in your Next.js app. For example:
-   ```tsx
-   import { Button } from '@/components/ui/button';
-
-   export default function Home() {
-     return <Button>Click Me</Button>;
-   }
+   git clone <your-repo>
+   cd vivid
+   npm install
    ```
 
----
-
-### **2. Install Prisma with MongoDB**
-Prisma provides a type-safe ORM for working with your MongoDB database.
-
-#### Installation Steps:
-1. **Add Prisma and the Prisma CLI:**
+2. **Set up environment variables:**
    ```bash
-   bun add prisma @prisma/client
-   bunx prisma init
+   cp .env.example .env
    ```
+   
+   Fill in your environment variables:
+   - Database URL
+   - OpenAI API Key
+   - Figma Access Token (optional)
+   - Figma File ID (optional)
 
-2. **Configure Prisma for MongoDB:**
-   Update your `prisma/schema.prisma` file:
-   ```prisma
-   datasource db {
-     provider = "mongodb"
-     url      = env("DATABASE_URL")
-   }
-
-   generator client {
-     provider = "prisma-client-js"
-   }
-
-   model User {
-     id    String @id @default(auto()) @map("_id") @db.ObjectId
-     name  String
-     email String @unique
-   }
-   ```
-
-3. **Set the Database URL:**
-   Add the MongoDB connection string in your `.env` file:
-   ```env
-   DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority"
-   ```
-
-4. **Generate the Prisma client:**
+3. **Run the development server:**
    ```bash
-   bunx prisma generate
+   npm run dev
    ```
 
-5. **Apply database migrations:**
-   Since MongoDB is schema-less, migrations might not always apply. Instead, you can validate your schema with:
-   ```bash
-   bunx prisma db push
-   ```
+## 🎨 Figma Integration
 
----
+### Setup Figma Connection
 
-### **3. Connect Prisma to Your Next.js App**
-To fetch data using Prisma in your Next.js app:
+1. **Get your Figma Access Token:**
+   - Go to [Figma Account Settings](https://www.figma.com/settings)
+   - Navigate to "Personal Access Tokens"
+   - Generate a new token
+   - Add it to your `.env` file as `FIGMA_ACCESS_TOKEN`
 
-1. **Import and initialize the Prisma client:**
-   ```tsx
-   import { PrismaClient } from '@prisma/client';
+2. **Get your Figma File ID:**
+   - Open your Figma file
+   - Copy the file ID from the URL: `https://www.figma.com/file/{FILE_ID}/...`
+   - Add it to your `.env` file as `FIGMA_FILE_ID`
 
-   const prisma = new PrismaClient();
+3. **Access the Design System:**
+   - Navigate to `/design` in your app
+   - Use the Figma Sync component to connect your file
+   - View your Figma file directly in the app
 
-   export default async function handler(req, res) {
-     const users = await prisma.user.findMany();
-     res.json(users);
-   }
-   ```
+### Environment Variables for Figma
 
-2. **Use API routes or server components** for data fetching.
-
----
-
-### **4. Run the Development Server**
-Start your app with:
-```bash
-bun dev
+```env
+# Figma Integration
+FIGMA_ACCESS_TOKEN="your_figma_access_token_here"
+FIGMA_FILE_ID="your_figma_file_id_here"
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see your Next.js app running with ShadCN UI and MongoDB integration.
+### Features
 
----
+- **Live Figma Embedding**: View your Figma designs directly in the app
+- **Design Token Sync**: Automatically sync colors, typography, and spacing from Figma
+- **Component Library**: Extract and implement Figma components in React
+- **Design System Documentation**: Maintain design consistency across your project
 
-### **5. Deployment**
-Deploy your app on [Vercel](https://vercel.com) and configure your environment variables (e.g., `DATABASE_URL`) in the Vercel dashboard.
+## 📁 Project Structure
 
-For more details:
-- [Prisma MongoDB Documentation](https://www.prisma.io/docs/guides/database-connectors/mongodb)
-- [ShadCN UI Documentation](https://shadcn.dev/docs)
+```
+├── app/
+│   ├── (protected)/
+│   │   ├── (pages)/
+│   │   │   ├── (dashboardPages)/
+│   │   │   │   ├── dashboard/
+│   │   │   │   ├── create-page/
+│   │   │   │   ├── design/          # Figma integration page
+│   │   │   │   ├── templates/
+│   │   │   │   └── settings/
+├── components/
+│   ├── design/                      # Figma-related components
+│   │   ├── FigmaEmbed.tsx
+│   │   ├── FigmaSync.tsx
+│   │   └── FigmaPrototype.tsx
+│   ├── global/
+│   └── ui/
+├── lib/
+│   ├── design-tokens.ts             # Figma design tokens
+│   ├── figma-integration.ts         # Figma API integration
+│   └── figma-utils.ts              # Figma utility functions
+└── docs/
+    └── design-system.md             # Design system documentation
+```
 
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 15
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI + shadcn/ui
+- **Database**: PostgreSQL + Prisma
+- **AI**: OpenAI API
+- **Design**: Figma API Integration
+- **State Management**: Zustand
+- **Authentication**: Clerk (configurable)
+
+## 📚 Documentation
+
+- [Design System Integration](./docs/design-system.md)
+- [Figma API Documentation](https://www.figma.com/developers/api)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

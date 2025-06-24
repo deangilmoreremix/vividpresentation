@@ -1,38 +1,139 @@
 import React from 'react';
 import { FigmaEmbed } from '@/components/design/FigmaEmbed';
+import { FigmaSync } from '@/components/design/FigmaSync';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ExternalLink, Upload, FileText } from 'lucide-react';
 
 const DesignSystemPage = () => {
-  const figmaFileId = process.env.FIGMA_FILE_ID || 'YOUR_FIGMA_FILE_ID';
+  // Get Figma file ID from environment or use placeholder
+  const figmaFileId = process.env.FIGMA_FILE_ID;
+  const hasConfiguredFigma = figmaFileId && figmaFileId !== 'YOUR_FIGMA_FILE_ID';
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Design System</h1>
         <p className="text-muted-foreground">
-          View and interact with our Figma design system directly in the app.
+          Connect your Figma design file to maintain design consistency and sync design tokens.
         </p>
       </div>
+
+      {/* Figma Setup Instructions */}
+      {!hasConfiguredFigma && (
+        <Card className="border-dashed border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Connect Your Figma File
+            </CardTitle>
+            <CardDescription>
+              Follow these steps to connect your Figma design file
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                  1
+                </div>
+                <div>
+                  <h4 className="font-medium">Get your Figma Access Token</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Go to Figma → Account Settings → Personal Access Tokens and create a new token
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                  2
+                </div>
+                <div>
+                  <h4 className="font-medium">Get your Figma File ID</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Copy the file ID from your Figma URL: figma.com/file/<strong>[FILE_ID]</strong>/...
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                  3
+                </div>
+                <div>
+                  <h4 className="font-medium">Update Environment Variables</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Add FIGMA_ACCESS_TOKEN and FIGMA_FILE_ID to your .env file
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => window.open('https://www.figma.com/developers/api#authentication', '_blank')}
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Figma API Docs
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => window.open('https://www.figma.com/settings', '_blank')}
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Figma Settings
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Figma Sync Component */}
+      <FigmaSync 
+        fileId={figmaFileId} 
+        onSync={(tokens) => {
+          console.log('Design tokens synced:', tokens);
+        }}
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               Figma Design File
-              <Badge variant="secondary">Live</Badge>
+              {hasConfiguredFigma ? (
+                <Badge variant="secondary">Connected</Badge>
+              ) : (
+                <Badge variant="outline">Not Connected</Badge>
+              )}
             </CardTitle>
             <CardDescription>
-              Interactive view of our complete design system from Figma
+              {hasConfiguredFigma 
+                ? "Interactive view of your Figma design file"
+                : "Connect your Figma file to view it here"
+              }
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <FigmaEmbed 
-              fileId={figmaFileId}
-              title="Vivid Design System"
-              className="min-h-[500px]"
-            />
+            {hasConfiguredFigma ? (
+              <FigmaEmbed 
+                fileId={figmaFileId}
+                title="Your Design System"
+                className="min-h-[500px]"
+              />
+            ) : (
+              <div className="min-h-[500px] border-2 border-dashed rounded-lg flex items-center justify-center">
+                <div className="text-center space-y-2">
+                  <FileText className="h-12 w-12 text-muted-foreground mx-auto" />
+                  <p className="text-muted-foreground">Connect your Figma file to see it here</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -73,10 +174,6 @@ const DesignSystemPage = () => {
                 <div className="bg-primary/20 h-2 w-32"></div>
               </div>
             </div>
-
-            <Button className="w-full" variant="outline">
-              Sync Design Tokens
-            </Button>
           </CardContent>
         </Card>
       </div>
