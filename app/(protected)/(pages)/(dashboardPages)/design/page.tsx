@@ -177,6 +177,25 @@ const DesignSystemPage = () => {
         </Card>
       </div>
 
+      {/* Uploaded Designs Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Uploaded Designs</CardTitle>
+          <CardDescription>
+            Design files uploaded to /public/designs/ folder
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground mb-2">No design files uploaded yet</p>
+            <p className="text-sm text-muted-foreground">
+              Upload your exported Figma designs to the <code>/public/designs/</code> folder to see them here
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Component Library</CardTitle>
@@ -202,8 +221,8 @@ const DesignSystemPage = () => {
                 <CardTitle className="text-base">Form Elements</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Input field"
                   className="w-full p-2 border rounded"
                 />
