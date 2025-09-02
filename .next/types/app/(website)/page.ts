@@ -1,4 +1,4 @@
-// File: /home/project/app/(website)/page.tsx
+// File: /workspaces/vividpresentation/app/(website)/page.tsx
 import * as entry from '../../../../app/(website)/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

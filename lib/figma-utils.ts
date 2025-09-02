@@ -27,17 +27,29 @@ export function isValidFigmaUrl(url: string): boolean {
 }
 
 // Generate embed URL for Figma file
-export function generateFigmaEmbedUrl(fileId: string, nodeId?: string): string {
-  const baseUrl = 'https://www.figma.com/embed';
-  const fileUrl = `https://www.figma.com/file/${fileId}`;
-  
-  let embedUrl = `${baseUrl}?embed_host=share&url=${encodeURIComponent(fileUrl)}`;
-  
+export function generateFigmaEmbedUrl(fileId: string, nodeId?: string, title?: string): string {
+  // Use the correct embed.figma.com format for reliable embeds
+  const baseUrl = 'https://embed.figma.com/design';
+  const defaultTitle = 'Design'; // Default title if not provided
+
+  let embedUrl = `${baseUrl}/${fileId}/${title || defaultTitle}?embed-host=share`;
+
   if (nodeId) {
     embedUrl += `&node-id=${encodeURIComponent(nodeId)}`;
   }
-  
+
   return embedUrl;
+}
+
+// Generate direct Figma design URL (for opening in Figma)
+export function generateFigmaDesignUrl(fileId: string, nodeId?: string): string {
+  let url = `https://www.figma.com/design/${fileId}`;
+
+  if (nodeId) {
+    url += `?node-id=${encodeURIComponent(nodeId)}`;
+  }
+
+  return url;
 }
 
 // Generate Figma file URL
@@ -108,6 +120,71 @@ export const FigmaFileStructure = {
   },
 };
 
+// Fetch Figma file data from API
+export async function fetchFigmaFile(fileId: string, accessToken: string): Promise<any> {
+  const response = await fetch(`https://api.figma.com/v1/files/${fileId}`, {
+    headers: {
+      'X-Figma-Token': accessToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch Figma file: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Extract page information from Figma file
+export function extractFigmaPages(figmaFile: any): Array<{ id: string; name: string; type: string }> {
+  if (!figmaFile.document || !figmaFile.document.children) {
+    return [];
+  }
+
+  return figmaFile.document.children.map((page: any) => ({
+    id: page.id,
+    name: page.name,
+    type: page.type,
+  }));
+}
+
+// Get page details including frames/components
+export function getPageDetails(page: any): {
+  frames: Array<{ id: string; name: string; type: string }>;
+  components: Array<{ id: string; name: string; type: string }>;
+} {
+  const frames: Array<{ id: string; name: string; type: string }> = [];
+  const components: Array<{ id: string; name: string; type: string }> = [];
+
+  function traverseNode(node: any) {
+    if (node.type === 'FRAME' || node.type === 'GROUP' || node.type === 'COMPONENT') {
+      frames.push({
+        id: node.id,
+        name: node.name,
+        type: node.type,
+      });
+    }
+
+    if (node.type === 'COMPONENT') {
+      components.push({
+        id: node.id,
+        name: node.name,
+        type: node.type,
+      });
+    }
+
+    if (node.children) {
+      node.children.forEach(traverseNode);
+    }
+  }
+
+  if (page.children) {
+    page.children.forEach(traverseNode);
+  }
+
+  return { frames, components };
+}
+
 // Sample function to guide users on organizing their Figma file
 export const FigmaOrganizationTips = {
   structure: [
@@ -117,14 +194,14 @@ export const FigmaOrganizationTips = {
     'Create component variants for different states',
     'Use auto-layout for responsive components',
   ],
-  
+
   naming: [
     'Use descriptive names: "Button/Primary/Default" instead of "Button 1"',
     'Follow a hierarchy: Component/Variant/State',
     'Keep names consistent across similar components',
     'Use clear color names: "Primary Blue" not "Blue 1"',
   ],
-  
+
   tokens: [
     'Group related colors together',
     'Create text styles for typography',

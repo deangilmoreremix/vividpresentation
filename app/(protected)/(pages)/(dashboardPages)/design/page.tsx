@@ -1,5 +1,5 @@
 import React from 'react';
-import { FigmaEmbed } from '@/components/design/FigmaEmbed';
+import { FigmaPagesViewer } from '@/components/design/FigmaEmbed';
 import { FigmaSync } from '@/components/design/FigmaSync';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -113,17 +113,16 @@ const DesignSystemPage = () => {
               )}
             </CardTitle>
             <CardDescription>
-              {hasConfiguredFigma 
-                ? "Interactive view of your Figma design file"
+              {hasConfiguredFigma
+                ? "Browse and embed all pages from your Figma design system"
                 : "Connect your Figma file to view it here"
               }
             </CardDescription>
           </CardHeader>
           <CardContent>
             {hasConfiguredFigma ? (
-              <FigmaEmbed 
+              <FigmaPagesViewer
                 fileId={figmaFileId}
-                title="Your Design System"
                 className="min-h-[500px]"
               />
             ) : (

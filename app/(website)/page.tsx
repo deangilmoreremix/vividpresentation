@@ -209,7 +209,7 @@ export default function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <Link href={'/sign-in'}>Get Started</Link>
+            <Link href={'/dashboard'}>Get Started</Link>
           </motion.div>
         </div>
       </div>
